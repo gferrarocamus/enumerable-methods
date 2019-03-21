@@ -64,11 +64,117 @@ module Enumerable
         end
         return result
     end
+
+    def my_any?(option = {})
+      result=false
+      if block_given?
+          if self.is_a? Array         
+              self.my_each do |item| 
+                  result=true if yield(item)
+              end
+          elsif self.is_a? Hash
+              self.my_each do |k, v| 
+                  result=true if yield(k,v)
+              end            
+          end
+      else
+          if self.is_a? Array         
+              self.my_each do |item| 
+                  result=true if item
+              end
+          elsif self.is_a? Hash
+              self.my_each do |k, v| 
+                  result=true if v[k]
+              end            
+          end
+      end
+      return result
+    end
+
+    def my_none?(option = {})
+      result=true
+
+      if block_given?
+          if self.is_a? Array         
+              self.my_each do |item| 
+                if yield item 
+                  result=false
+                  break
+                end                  
+              end
+          elsif self.is_a? Hash
+              self.my_each do |k, v| 
+                if yield(k,v)
+                  result=false
+                  break
+                end
+                  
+              end            
+          end
+      else
+          if self.is_a? Array         
+              self.my_each do |item| 
+                if item  
+                  result=false
+                  break
+                end
+              end
+          elsif self.is_a? Hash
+              self.my_each do |k, v| 
+                if v[k]
+                  result=false
+                  break
+                end                  
+              end            
+          end
+      end
+      return result
+    end
     
+    def my_count(arg=nil)
+      count = 0
+      if block_given?
+        if self.is_a? Array
+          self.my_each do |item|
+            if yield(item)
+              count += 1
+            end   
+          end        
+        elsif self.is_a? Hash
+          self.my_each do |k,v|
+            if yield(k,v)
+              count += 1
+            end   
+          end
+        end
+
+      else
+        if arg.nil?
+          return self.length
+        else
+          if self.is_a? Array
+            self.my_each do |item|
+              if item == arg
+                count += 1
+              end   
+            end                  
+          elsif self.is_a? Hash
+            self.my_each do |k,v|
+              if v == arg
+                count += 1
+              end   
+            end
+          end
+        end
+        
+        
+      end
+      return count
+end
 end
 
 
-arr=[1,2,3,4,5,6]
+arr=[1,2,3,4,5]
 
 hash = {
     "a"=>1,
@@ -85,7 +191,7 @@ test = hash.my_select{|k,v| v%2==0 }
 "test123".my_each{|i| puts i}
 =end
 
-test=[].my_all?  
+test=arr.my_count{ |x| x%2==0 }
 puts test
 
 #"string".each {|c| puts c}
