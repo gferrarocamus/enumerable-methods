@@ -62,7 +62,7 @@ module Enumerable
                 end            
             end
         else
-            arg.each do |a|
+            arg.my_each do |a|
                 if self.is_a? Array         
                     self.my_each do |item| 
                         result=false unless item==a
@@ -100,7 +100,7 @@ module Enumerable
               end            
           end
       else
-        arg.each do |a|
+        arg.my_each do |a|
             if self.is_a? Array         
                 self.my_each do |item| 
                     result=true if item==a
@@ -152,7 +152,7 @@ module Enumerable
               end            
           end
       else
-        arg.each do |a|
+        arg.my_each do |a|
             if self.is_a? Array         
                 self.my_each do |item| 
                     if item == a 
@@ -228,8 +228,6 @@ module Enumerable
             self.my_each do |k, v| 
                 result.push(yield(k,v))
             end
-        else
-            result=[1,2,3]
         end
         return result
     end
