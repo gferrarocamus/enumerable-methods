@@ -39,19 +39,30 @@ module Enumerable
         end     
     end
 
-    def my_all?()
+    def my_all?(option = {})
         result=true
-        if self.is_a? Array            
-            self.my_each do |item| 
-                result=false unless yield(item)
+        if block_given?
+            if self.is_a? Array         
+                self.my_each do |item| 
+                    result=false unless yield(item)
+                end
+            elsif self.is_a? Hash
+                self.my_each do |k, v| 
+                    result=false unless yield(k,v)
+                end            
             end
-            return result
-        elsif self.is_a? Hash
-            self.my_each do |k, v| 
-                result=false unless yield(k,v)
+        else
+            if self.is_a? Array         
+                self.my_each do |item| 
+                    result=false unless item
+                end
+            elsif self.is_a? Hash
+                self.my_each do |k, v| 
+                    result=false unless v[k]
+                end            
             end
-            return result
-        end  
+        end
+        return result
     end
     
 end
@@ -74,7 +85,7 @@ test = hash.my_select{|k,v| v%2==0 }
 "test123".my_each{|i| puts i}
 =end
 
-test=[1, 2i, 3.14].my_all?(Numeric) 
+test=[].my_all?  
 puts test
 
 #"string".each {|c| puts c}
