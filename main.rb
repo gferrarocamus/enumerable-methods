@@ -22,8 +22,40 @@ module Enumerable
         end
       end
     end
+
+    def my_select
+        if self.is_a? Array
+            result=[]
+            self.my_each do |item| 
+                result.push(item) if yield(item)
+            end
+            return result
+        elsif self.is_a? Hash
+            result=Hash.new(0)
+            self.my_each do |k, v| 
+                result[k]=v if yield(k,v)
+            end
+            return result
+        end     
+    end
+
+    def my_all?()
+        result=true
+        if self.is_a? Array            
+            self.my_each do |item| 
+                result=false unless yield(item)
+            end
+            return result
+        elsif self.is_a? Hash
+            self.my_each do |k, v| 
+                result=false unless yield(k,v)
+            end
+            return result
+        end  
+    end
     
 end
+
 
 arr=[1,2,3,4,5,6]
 
@@ -33,9 +65,16 @@ hash = {
     "c"=>3
 }
 
+=begin
 hash.my_each_with_index do |item, a, b|
     puts "#{item} #{a} #{b}"
 end
 
+test = hash.my_select{|k,v| v%2==0 }
+"test123".my_each{|i| puts i}
+=end
+
+test=[1, 2i, 3.14].my_all?(Numeric) 
+puts test
 
 #"string".each {|c| puts c}
