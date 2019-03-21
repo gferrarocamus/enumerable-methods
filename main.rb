@@ -39,7 +39,7 @@ module Enumerable
         end     
     end
 
-    def my_all?(option = {})
+    def my_all?(*arg)
         result=true
         if block_given?
             if self.is_a? Array         
@@ -51,7 +51,7 @@ module Enumerable
                     result=false unless yield(k,v)
                 end            
             end
-        else
+        elsif arg.empty?        
             if self.is_a? Array         
                 self.my_each do |item| 
                     result=false unless item
@@ -61,11 +61,23 @@ module Enumerable
                     result=false unless v[k]
                 end            
             end
+        else
+            arg.each do |a|
+                if self.is_a? Array         
+                    self.my_each do |item| 
+                        result=false unless item==a
+                    end
+                elsif self.is_a? Hash
+                    self.my_each do |k, v| 
+                        result=false unless v[k]==a
+                    end            
+                end
+            end
         end
         return result
     end
 
-    def my_any?(option = {})
+    def my_any?(*arg)
       result=false
       if block_given?
           if self.is_a? Array         
@@ -77,7 +89,7 @@ module Enumerable
                   result=true if yield(k,v)
               end            
           end
-      else
+      elsif arg.empty?
           if self.is_a? Array         
               self.my_each do |item| 
                   result=true if item
@@ -87,11 +99,23 @@ module Enumerable
                   result=true if v[k]
               end            
           end
+      else
+        arg.each do |a|
+            if self.is_a? Array         
+                self.my_each do |item| 
+                    result=true if item==a
+                end
+            elsif self.is_a? Hash
+                self.my_each do |k, v| 
+                    result=true if v[k]==a
+                end            
+            end
+      end
       end
       return result
     end
 
-    def my_none?(option = {})
+    def my_none?(*arg)
       result=true
 
       if block_given?
@@ -111,7 +135,7 @@ module Enumerable
                   
               end            
           end
-      else
+        elsif arg.empty?
           if self.is_a? Array         
               self.my_each do |item| 
                 if item  
@@ -127,6 +151,24 @@ module Enumerable
                 end                  
               end            
           end
+      else
+        arg.each do |a|
+            if self.is_a? Array         
+                self.my_each do |item| 
+                    if item == a 
+                        result=false
+                        break
+                    end
+                end
+            elsif self.is_a? Hash
+                self.my_each do |k, v| 
+                    if v[k] == a
+                        result=false
+                        break
+                    end                  
+                end            
+            end
+        end
       end
       return result
     end
@@ -165,33 +207,30 @@ module Enumerable
               end   
             end
           end
-        end
-        
-        
+        end  
       end
       return count
+    end
+
+    def my_map
+        return to_enum(:my_map) unless block_given?
+        result=[]
+        if self.is_a? Range
+            arr = self.to_a 
+            arr.my_each do |item| 
+                result.push(yield(item)) 
+            end
+        elsif self.is_a? Array
+            self.my_each do |item| 
+                result.push(yield(item)) 
+            end
+        elsif self.is_a? Hash
+            self.my_each do |k, v| 
+                result.push(yield(k,v))
+            end
+        else
+            result=[1,2,3]
+        end
+        return result
+    end
 end
-end
-
-
-arr=[1,2,3,4,5]
-
-hash = {
-    "a"=>1,
-    "b"=>2,
-    "c"=>3
-}
-
-=begin
-hash.my_each_with_index do |item, a, b|
-    puts "#{item} #{a} #{b}"
-end
-
-test = hash.my_select{|k,v| v%2==0 }
-"test123".my_each{|i| puts i}
-=end
-
-test=arr.my_count{ |x| x%2==0 }
-puts test
-
-#"string".each {|c| puts c}
