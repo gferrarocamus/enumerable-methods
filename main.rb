@@ -27,7 +27,7 @@ module Enumerable
   def my_select
     if is_a? Array
       result = []
-      my_each { |item| result.push(item) if yield(item) } 
+      my_each {|item| result.push(item) if yield(item)} 
       result
     elsif is_a? Hash
       result = Hash.new(0)
