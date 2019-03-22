@@ -46,18 +46,15 @@ module Enumerable
         result = false unless yield(k, v)
       end
     end
-    result    
+    result
   end
 
-  def my_all_not_block(result, a)
-    
-      if a.is_a? Class
-        result = my_all_arg_class(result, a)
-      else
-        result = my_all_arg_class_else(result, a)
-      end
-    
-    result
+  def my_all_not_block(result, arg)
+    result = if arg.is_a? Class
+               my_all_arg_class(result, arg)
+             else
+               my_all_arg_class_else(result, arg)
+             end
   end
 
   def my_all_empty_arg(result)
@@ -69,30 +66,30 @@ module Enumerable
     result
   end
 
-  def my_all_arg_class(result, a)
+  def my_all_arg_class(result, arg)
     if is_a? Array
       my_each do |item|
-        result = false unless item.is_a? a
+        result = false unless item.is_a? arg
       end
     elsif is_a? Hash
       my_each do |k, v|
-        result = false unless v[k].is_a? a
+        result = false unless v[k].is_a? arg
       end
     end
     result
   end
 
-  def my_all_arg_class_else(result, a)
+  def my_all_arg_class_else(result, arg)
     if is_a? Array
       my_each do |item|
-        result = false unless item == a
+        result = false unless item == arg
       end
     elsif is_a? Hash
       my_each do |k, v|
-        result = false unless v[k] == a
+        result = false unless v[k] == arg
       end
     end
-    result    
+    result
   end
 
   def my_all?(*arg, &block)
