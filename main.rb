@@ -27,11 +27,11 @@ module Enumerable
   def my_select
     if is_a? Array
       result = []
-      my_each {|item| result.push(item) if yield(item)} 
+      my_each { |item| result.push(item) if yield(item) }
       result
     elsif is_a? Hash
       result = Hash.new(0)
-      my_each { |k, v| result[k] = v if yield(k, v) } 
+      my_each { |k, v| result[k] = v if yield(k, v) }
       result
     end
   end
