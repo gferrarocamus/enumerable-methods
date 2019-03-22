@@ -1,3 +1,4 @@
+#recreating some methods in Enumerable module
 module Enumerable
   def my_each
     if is_a? Array
