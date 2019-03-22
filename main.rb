@@ -36,40 +36,73 @@ module Enumerable
     end
   end
 
-  def my_all?(*arg)
+  def my_all_block(result, &block)
+    if is_a? Array
+      my_each do |item|
+        result = false unless yield(item)
+      end
+    elsif is_a? Hash
+      my_each do |k, v|
+        result = false unless yield(k, v)
+      end
+    end
+    result    
+  end
+
+  def my_all_not_block(result, a)
+    
+      if a.is_a? Class
+        result = my_all_arg_class(result, a)
+      else
+        result = my_all_arg_class_else(result, a)
+      end
+    
+    result
+  end
+
+  def my_all_empty_arg(result)
+    if is_a? Array
+      my_each { |item| result = false unless item }
+    elsif is_a? Hash
+      my_each { |k, v| result = false unless v[k] }
+    end
+    result
+  end
+
+  def my_all_arg_class(result, a)
+    if is_a? Array
+      my_each do |item|
+        result = false unless item.is_a? a
+      end
+    elsif is_a? Hash
+      my_each do |k, v|
+        result = false unless v[k].is_a? a
+      end
+    end
+    result
+  end
+
+  def my_all_arg_class_else(result, a)
+    if is_a? Array
+      my_each do |item|
+        result = false unless item == a
+      end
+    elsif is_a? Hash
+      my_each do |k, v|
+        result = false unless v[k] == a
+      end
+    end
+    result    
+  end
+
+  def my_all?(*arg, &block)
     result = true
     if block_given?
-      if is_a? Array
-        my_each do |item|
-          result = false unless yield(item)
-        end
-      elsif is_a? Hash
-        my_each do |k, v|
-          result = false unless yield(k, v)
-        end
-      end
+      result = my_all_block(result, &block)
     elsif arg.empty?
-      if is_a? Array
-        my_each do |item|
-          result = false unless item
-        end
-      elsif is_a? Hash
-        my_each do |k, v|
-          result = false unless v[k]
-        end
-      end
+      result = my_all_empty_arg(result)
     else
-      arg.my_each do |a|
-        if is_a? Array
-          my_each do |item|
-            result = false unless item == a
-          end
-        elsif is_a? Hash
-          my_each do |k, v|
-            result = false unless v[k] == a
-          end
-          end
-      end
+      arg.my_each { |a| result = my_all_not_block(result, a) }
     end
     result
   end
@@ -221,3 +254,14 @@ module Enumerable
     result
   end
 end
+
+puts %w[ant bear cat].my_all? { |word| word.length >= 4 } #=> false
+puts %w[ant bear cat].my_all? { |word| word.length >= 3 } #=> true
+puts %w[ant bear cat].my_all?(/t/)                        #=> false
+puts [1, 2i, 3.14].my_all?(Numeric)                       #=> true
+puts [nil, true, 99].my_all?                              #=> false
+puts [].my_all?                                           #=> true
+
+# puts 2i.is_a? Numeric
+
+# puts Numeric.class
