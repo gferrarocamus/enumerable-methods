@@ -1,4 +1,4 @@
-#recreating some methods in Enumerable module
+# recreating some methods in Enumerable module
 module Enumerable
   def my_each
     if is_a? Array
@@ -27,15 +27,11 @@ module Enumerable
   def my_select
     if is_a? Array
       result = []
-      my_each do |item|
-        result.push(item) if yield(item)
-      end
+      my_each { |item| result.push(item) if yield(item) } 
       result
     elsif is_a? Hash
       result = Hash.new(0)
-      my_each do |k, v|
-        result[k] = v if yield(k, v)
-      end
+      my_each { |k, v| result[k] = v if yield(k, v) } 
       result
     end
   end
