@@ -274,7 +274,7 @@ module Enumerable
       my_each do |k, v|
         count += 1 if yield(k, v)
       end
-      end
+    end
     count
   end
 
@@ -290,15 +290,12 @@ module Enumerable
   def my_count(arg = nil, &block)
     count = 0
     if block_given?
-      count = my_count_block(count, &block)
+      my_count_block(count, &block)
+    elsif arg.nil?
+      length
     else
-      if arg.nil?
-        return length
-      else
-        count = my_count_not_block(count, arg)
-      end
+      my_count_not_block(count, arg)
     end
-    count
   end
 
   def my_map
