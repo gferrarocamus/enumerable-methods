@@ -50,11 +50,11 @@ module Enumerable
   end
 
   def my_all_not_block(result, arg)
-    result = if arg.is_a? Class
-               my_all_arg_class(result, arg)
-             else
-               my_all_arg_class_else(result, arg)
-             end
+    if arg.is_a? Class
+      my_all_arg_class(result, arg)
+    else
+      my_all_arg_class_else(result, arg)
+    end
   end
 
   def my_all_empty_arg(result)
@@ -104,97 +104,80 @@ module Enumerable
     result
   end
 
-  def my_any?(*arg)
-    result = false
-    if block_given?
-      if is_a? Array
-        my_each do |item|
-          result = true if yield(item)
-        end
-      elsif is_a? Hash
-        my_each do |k, v|
-          result = true if yield(k, v)
-        end
-      end
-    elsif arg.empty?
-      if is_a? Array
-        my_each do |item|
-          result = true if item
-        end
-      elsif is_a? Hash
-        my_each do |k, v|
-          result = true if v[k]
-        end
-      end
-    else
-      arg.my_each do |a|
-        if is_a? Array
-          my_each do |item|
-            result = true if item == a
-          end
-        elsif is_a? Hash
-          my_each do |k, v|
-            result = true if v[k] == a
-          end
-        end
-      end
+  def my_any_block(result)
+    if is_a? Array
+      my_each { |item| result = true if yield(item) }
+    elsif is_a? Hash
+      my_each { |k, v| result = true if yield(k, v) }
     end
     result
   end
 
-  def my_none?(*arg)
+  def my_any_empty_arg(result)
+    if is_a? Array
+      my_each { |item| result = true if item }
+    elsif is_a? Hash
+      my_each { |k, v| result = true if v[k] }
+    end
+  end
+
+  def my_any_arg(result, arg)
+    if is_a? Array
+      my_each do |item|
+        result = true if item == arg
+      end
+    elsif is_a? Hash
+      my_each do |k, v|
+        result = true if v[k] == arg
+      end
+    end
+  end
+
+  def my_any?(*arg, &block)
+    result = false
+    if block_given?
+      result = my_any_block(result, &block)
+    elsif arg.empty?
+      result = my_any_empty_arg(result)
+    else
+      arg.my_each { |a| result = my_any_arg(result, a) }
+    end
+    result
+  end
+
+  def my_none_block(result)
+    if is_a? Array
+      my_each {|item| result = false; break if yield item }
+    elsif is_a? Hash
+      my_each { |k, v| result = false; break if yield(k, v) }
+    end
+  end
+
+  def my_none_empty_arg(result)
+    if is_a? Array
+      my_each { |item|result = false; break if item}
+    elsif is_a? Hash
+      my_each { |k, v| result = false; break if v[k]}
+    end
+  end
+
+  def my_none_else(result, arg)
+    if is_a? Array
+      my_each { |item| result = false; break if item == arg }
+    elsif is_a? Hash
+      my_each { |k, v| result = false; break if v[k] == arg }
+    end
+  end
+
+  def my_none?(*arg, &block)
     result = true
 
     if block_given?
-      if is_a? Array
-        my_each do |item|
-          if yield item
-            result = false
-            break
-          end
-        end
-      elsif is_a? Hash
-        my_each do |k, v|
-          if yield(k, v)
-            result = false
-            break
-          end
-        end
-      end
+      result = my_none_block(result, &block)
     elsif arg.empty?
-      if is_a? Array
-        my_each do |item|
-          if item
-            result = false
-            break
-          end
-        end
-      elsif is_a? Hash
-        my_each do |k, v|
-          if v[k]
-            result = false
-            break
-          end
-        end
-      end
+      result = my_none_empty_arg(result)
     else
-      arg.my_each do |a|
-        if is_a? Array
-          my_each do |item|
-            if item == a
-              result = false
-              break
-            end
-          end
-        elsif is_a? Hash
-          my_each do |k, v|
-            if v[k] == a
-              result = false
-              break
-            end
-          end
-        end
-      end
+      arg.my_each {|a| result = my_none_else(result, arg) }
     end
     result
   end
@@ -252,6 +235,7 @@ module Enumerable
   end
 end
 
+=begin
 puts %w[ant bear cat].my_all? { |word| word.length >= 4 } #=> false
 puts %w[ant bear cat].my_all? { |word| word.length >= 3 } #=> true
 puts %w[ant bear cat].my_all?(/t/)                        #=> false
@@ -259,6 +243,18 @@ puts [1, 2i, 3.14].my_all?(Numeric)                       #=> true
 puts [nil, true, 99].my_all?                              #=> false
 puts [].my_all?                                           #=> true
 
-# puts 2i.is_a? Numeric
-
-# puts Numeric.class
+puts %w[ant bear cat].any? { |word| word.length >= 3 } #=> true
+puts %w[ant bear cat].any? { |word| word.length >= 4 } #=> true
+puts %w[ant bear cat].any?(/d/)                        #=> false
+puts [nil, true, 99].any?(Integer)                     #=> true
+puts [nil, true, 99].any?                              #=> true
+puts [].any?                                           #=> false
+=end
+puts %w{ant bear cat}.none? { |word| word.length == 5 } #=> true
+puts %w{ant bear cat}.none? { |word| word.length >= 4 } #=> false
+puts %w{ant bear cat}.none?(/d/)                        #=> true
+puts [1, 3.14, 42].none?(Float)                         #=> false
+puts [].none?                                           #=> true
+puts [nil].none?                                        #=> true
+puts [nil, false].none?                                 #=> true
+puts [nil, false, true].none?                           #=> false
