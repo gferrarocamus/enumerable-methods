@@ -170,17 +170,17 @@ module Enumerable
 
   def my_none_block(result)
     if is_a? Array
-      my_each do |item| 
+      my_each do |item|
         if yield item
           result = false
           break
-        end 
+        end
       end
     elsif is_a? Hash
-      my_each do |k, v| 
+      my_each do |k, v|
         if yield(k, v)
-        result = false
-        break  
+          result = false
+          break
         end
       end
     end
@@ -197,10 +197,10 @@ module Enumerable
       end
     elsif is_a? Hash
       my_each do |k, v|
-       if v[k]
-        result = false
-        break
-       end
+        if v[k]
+          result = false
+          break
+        end
       end
     end
     result
@@ -208,45 +208,45 @@ module Enumerable
 
   def my_none_else_class(result, arg)
     if is_a? Array
-        my_each do |item| 
-         if item.is_a? arg  
+      my_each do |item|
+        if item.is_a? arg
           result = false
           break
-         end
         end
+      end
     elsif is_a? Hash
-        my_each do |k, v| 
-          if v[k].is_a? arg
-            result = false
-            break 
-          end 
+      my_each do |k, v|
+        if v[k].is_a? arg
+          result = false
+          break
         end
+      end
     end
     result
   end
 
   def my_none_else_else(result, arg)
-      if is_a? Array
-        my_each do |item|
-          if item == arg
-            result = false
-            break  
-          end
-        end
-      elsif is_a? Hash
-        my_each do |k, v|
-          if v[k] == arg 
-            result = false
-            break 
-          end
+    if is_a? Array
+      my_each do |item|
+        if item == arg
+          result = false
+          break
         end
       end
-      result
+    elsif is_a? Hash
+      my_each do |k, v|
+        if v[k] == arg
+          result = false
+          break
+        end
+      end
+    end
+    result
   end
 
   def my_none_else(result, arg)
     if arg.is_a? Class
-     my_none_else_class(result, arg)
+      my_none_else_class(result, arg)
     else
       my_none_else_else(result, arg)
     end
@@ -260,22 +260,22 @@ module Enumerable
     elsif arg.empty?
       result = my_none_empty_arg(result)
     else
-      arg.my_each {|a| result = my_none_else(result, a) }
+      arg.my_each { |a| result = my_none_else(result, a) }
     end
     result
   end
 
   def my_count_block(count)
     if is_a? Array
-        my_each do |item|
-          count += 1 if yield(item)
-        end
-      elsif is_a? Hash
-        my_each do |k, v|
-          count += 1 if yield(k, v)
-        end
+      my_each do |item|
+        count += 1 if yield(item)
       end
-      count
+    elsif is_a? Hash
+      my_each do |k, v|
+        count += 1 if yield(k, v)
+      end
+      end
+    count
   end
 
   def my_count_not_block(count, arg)
@@ -323,35 +323,32 @@ module Enumerable
   end
 end
 
-=begin
-puts %w[ant bear cat].my_all? { |word| word.length >= 4 } #=> false
-puts %w[ant bear cat].my_all? { |word| word.length >= 3 } #=> true
-puts %w[ant bear cat].my_all?(/t/)                        #=> false
-puts [1, 2i, 3.14].my_all?(Numeric)                       #=> true
-puts [nil, true, 99].my_all?                              #=> false
-puts [].my_all?                                           #=> true
-
-
-puts %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
-puts %w[ant bear cat].my_any? { |word| word.length >= 4 } #=> true
-puts %w[ant bear cat].my_any?(/d/)                        #=> false
-puts [nil, true, 99].my_any?(Integer)                     #=> true
-puts [nil, true, 99].my_any?                              #=> true
-puts [].my_any?                                           #=> false
-
-
-puts %w{ant bear cat}.my_none? { |word| word.length == 5 } #=> true
-puts %w{ant bear cat}.my_none? { |word| word.length >= 4 } #=> false
-puts %w{ant bear cat}.my_none?(/d/)                        #=> true
-puts [1, 3.14, 42].my_none?(Float)                         #=> false
-puts [].my_none?                                           #=> true
-puts [nil].my_none?                                        #=> true
-puts [nil, false].my_none?                                 #=> true
-puts [nil, false, true].my_none?                           #=> false
-=end
-
+# puts %w[ant bear cat].my_all? { |word| word.length >= 4 } #=> false
+# puts %w[ant bear cat].my_all? { |word| word.length >= 3 } #=> true
+# puts %w[ant bear cat].my_all?(/t/)                        #=> false
+# puts [1, 2i, 3.14].my_all?(Numeric)                       #=> true
+# puts [nil, true, 99].my_all?                              #=> false
+# puts [].my_all?                                           #=> true
+#
+#
+# puts %w[ant bear cat].my_any? { |word| word.length >= 3 } #=> true
+# puts %w[ant bear cat].my_any? { |word| word.length >= 4 } #=> true
+# puts %w[ant bear cat].my_any?(/d/)                        #=> false
+# puts [nil, true, 99].my_any?(Integer)                     #=> true
+# puts [nil, true, 99].my_any?                              #=> true
+# puts [].my_any?                                           #=> false
+#
+#
+# puts %w{ant bear cat}.my_none? { |word| word.length == 5 } #=> true
+# puts %w{ant bear cat}.my_none? { |word| word.length >= 4 } #=> false
+# puts %w{ant bear cat}.my_none?(/d/)                        #=> true
+# puts [1, 3.14, 42].my_none?(Float)                         #=> false
+# puts [].my_none?                                           #=> true
+# puts [nil].my_none?                                        #=> true
+# puts [nil, false].my_none?                                 #=> true
+# puts [nil, false, true].my_none?                           #=> false
 
 ary = [1, 2, 4, 2]
 puts ary.my_count               #=> 4
 puts ary.my_count(2)            #=> 2
-puts ary.my_count{ |x| x%2==0 } #=> 3
+puts ary.my_count(&:even?) #=> 3
