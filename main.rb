@@ -36,7 +36,7 @@ module Enumerable
     end
   end
 
-  def my_all_block(result, &block)
+  def my_all_block(result)
     if is_a? Array
       my_each do |item|
         result = false unless yield(item)
