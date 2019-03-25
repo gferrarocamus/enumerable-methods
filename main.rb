@@ -89,18 +89,11 @@ module Enumerable
 
     result = []
     if is_a? Range
-      arr = to_a
-      arr.my_each do |item|
-        result.push(yield(item))
-      end
+      to_a.my_each { |item| result.push(yield(item)) }
     elsif is_a? Array
-      my_each do |item|
-        result.push(yield(item))
-      end
+      my_each { |item| result.push(yield(item)) }
     elsif is_a? Hash
-      my_each do |k, v|
-        result.push(yield(k, v))
-      end
+      my_each { |k, v| result.push(yield(k, v)) }
     end
     result
   end
