@@ -36,62 +36,6 @@ module Enumerable
     end
   end
 
-  def my_all_block(result)
-    if is_a? Array
-      my_each do |item|
-        result = false unless yield(item)
-      end
-    elsif is_a? Hash
-      my_each do |k, v|
-        result = false unless yield(k, v)
-      end
-    end
-    result
-  end
-
-  def my_all_not_block(result, arg)
-    if arg.is_a? Class
-      my_all_arg_class(result, arg)
-    else
-      my_all_arg_class_else(result, arg)
-    end
-  end
-
-  def my_all_empty_arg(result)
-    if is_a? Array
-      my_each { |item| result = false unless item }
-    elsif is_a? Hash
-      my_each { |k, v| result = false unless v[k] }
-    end
-    result
-  end
-
-  def my_all_arg_class(result, arg)
-    if is_a? Array
-      my_each do |item|
-        result = false unless item.is_a? arg
-      end
-    elsif is_a? Hash
-      my_each do |k, v|
-        result = false unless v[k].is_a? arg
-      end
-    end
-    result
-  end
-
-  def my_all_arg_class_else(result, arg)
-    if is_a? Array
-      my_each do |item|
-        result = false unless item == arg
-      end
-    elsif is_a? Hash
-      my_each do |k, v|
-        result = false unless v[k] == arg
-      end
-    end
-    result
-  end
-
   def my_all?(*arg, &block)
     result = true
     if block_given?
@@ -102,58 +46,6 @@ module Enumerable
       arg.my_each { |a| result = my_all_not_block(result, a) }
     end
     result
-  end
-
-  def my_any_block(result)
-    if is_a? Array
-      my_each { |item| result = true if yield(item) }
-    elsif is_a? Hash
-      my_each { |k, v| result = true if yield(k, v) }
-    end
-    result
-  end
-
-  def my_any_empty_arg(result)
-    if is_a? Array
-      my_each { |item| result = true if item }
-    elsif is_a? Hash
-      my_each { |k, v| result = true if v[k] }
-    end
-    result
-  end
-
-  def my_any_arg_class(result, arg)
-    if is_a? Array
-      my_each do |item|
-        result = true if item.is_a? arg
-      end
-    elsif is_a? Hash
-      my_each do |k, v|
-        result = true if v[k].is_a? arg
-      end
-    end
-    result
-  end
-
-  def my_any_arg_clas_else(result, arg)
-    if is_a? Array
-      my_each do |item|
-        result = true if item == arg
-      end
-    elsif is_a? Hash
-      my_each do |k, v|
-        result = true if v[k] == arg
-      end
-    end
-    result
-  end
-
-  def my_any_arg(result, arg)
-    if arg.is_a? Class
-      my_any_arg_class(result, arg)
-    else
-      my_any_arg_clas_else(result, arg)
-    end
   end
 
   def my_any?(*arg, &block)
@@ -168,90 +60,6 @@ module Enumerable
     result
   end
 
-  def my_none_block(result)
-    if is_a? Array
-      my_each do |item|
-        if yield item
-          result = false
-          break
-        end
-      end
-    elsif is_a? Hash
-      my_each do |k, v|
-        if yield(k, v)
-          result = false
-          break
-        end
-      end
-    end
-    result
-  end
-
-  def my_none_empty_arg(result)
-    if is_a? Array
-      my_each do |item|
-        if item
-          result = false
-          break
-        end
-      end
-    elsif is_a? Hash
-      my_each do |k, v|
-        if v[k]
-          result = false
-          break
-        end
-      end
-    end
-    result
-  end
-
-  def my_none_else_class(result, arg)
-    if is_a? Array
-      my_each do |item|
-        if item.is_a? arg
-          result = false
-          break
-        end
-      end
-    elsif is_a? Hash
-      my_each do |k, v|
-        if v[k].is_a? arg
-          result = false
-          break
-        end
-      end
-    end
-    result
-  end
-
-  def my_none_else_else(result, arg)
-    if is_a? Array
-      my_each do |item|
-        if item == arg
-          result = false
-          break
-        end
-      end
-    elsif is_a? Hash
-      my_each do |k, v|
-        if v[k] == arg
-          result = false
-          break
-        end
-      end
-    end
-    result
-  end
-
-  def my_none_else(result, arg)
-    if arg.is_a? Class
-      my_none_else_class(result, arg)
-    else
-      my_none_else_else(result, arg)
-    end
-  end
-
   def my_none?(*arg, &block)
     result = true
 
@@ -263,28 +71,6 @@ module Enumerable
       arg.my_each { |a| result = my_none_else(result, a) }
     end
     result
-  end
-
-  def my_count_block(count)
-    if is_a? Array
-      my_each do |item|
-        count += 1 if yield(item)
-      end
-    elsif is_a? Hash
-      my_each do |k, v|
-        count += 1 if yield(k, v)
-      end
-    end
-    count
-  end
-
-  def my_count_not_block(count, arg)
-    if is_a? Array
-      my_each { |item| count += 1 if item == arg }
-    elsif is_a? Hash
-      my_each { |_k, v| count += 1 if v == arg }
-    end
-    count
   end
 
   def my_count(arg = nil, &block)
@@ -320,6 +106,224 @@ module Enumerable
   end
 end
 
+# aux methods for my_all?
+def my_all_block(result)
+  if is_a? Array
+    my_each do |item|
+      result = false unless yield(item)
+    end
+  elsif is_a? Hash
+    my_each do |k, v|
+      result = false unless yield(k, v)
+    end
+  end
+  result
+end
+
+def my_all_not_block(result, arg)
+  if arg.is_a? Class
+    my_all_arg_class(result, arg)
+  else
+    my_all_arg_class_else(result, arg)
+  end
+end
+
+def my_all_empty_arg(result)
+  if is_a? Array
+    my_each { |item| result = false unless item }
+  elsif is_a? Hash
+    my_each { |k, v| result = false unless v[k] }
+  end
+  result
+end
+
+def my_all_arg_class(result, arg)
+  if is_a? Array
+    my_each do |item|
+      result = false unless item.is_a? arg
+    end
+  elsif is_a? Hash
+    my_each do |k, v|
+      result = false unless v[k].is_a? arg
+    end
+  end
+  result
+end
+
+def my_all_arg_class_else(result, arg)
+  if is_a? Array
+    my_each do |item|
+      result = false unless item == arg
+    end
+  elsif is_a? Hash
+    my_each do |k, v|
+      result = false unless v[k] == arg
+    end
+  end
+  result
+end
+
+# aux methods for my_any?
+def my_any_block(result)
+  if is_a? Array
+    my_each { |item| result = true if yield(item) }
+  elsif is_a? Hash
+    my_each { |k, v| result = true if yield(k, v) }
+  end
+  result
+end
+
+def my_any_empty_arg(result)
+  if is_a? Array
+    my_each { |item| result = true if item }
+  elsif is_a? Hash
+    my_each { |k, v| result = true if v[k] }
+  end
+  result
+end
+
+def my_any_arg_class(result, arg)
+  if is_a? Array
+    my_each do |item|
+      result = true if item.is_a? arg
+    end
+  elsif is_a? Hash
+    my_each do |k, v|
+      result = true if v[k].is_a? arg
+    end
+  end
+  result
+end
+
+def my_any_arg_clas_else(result, arg)
+  if is_a? Array
+    my_each do |item|
+      result = true if item == arg
+    end
+  elsif is_a? Hash
+    my_each do |k, v|
+      result = true if v[k] == arg
+    end
+  end
+  result
+end
+
+def my_any_arg(result, arg)
+  if arg.is_a? Class
+    my_any_arg_class(result, arg)
+  else
+    my_any_arg_clas_else(result, arg)
+  end
+end
+
+# aux methods for my_none?
+def my_none_block(result)
+  if is_a? Array
+    my_each do |item|
+      if yield item
+        result = false
+        break
+      end
+    end
+  elsif is_a? Hash
+    my_each do |k, v|
+      if yield(k, v)
+        result = false
+        break
+      end
+    end
+  end
+  result
+end
+
+def my_none_empty_arg(result)
+  if is_a? Array
+    my_each do |item|
+      if item
+        result = false
+        break
+      end
+    end
+  elsif is_a? Hash
+    my_each do |k, v|
+      if v[k]
+        result = false
+        break
+      end
+    end
+  end
+  result
+end
+
+def my_none_else_class(result, arg)
+  if is_a? Array
+    my_each do |item|
+      if item.is_a? arg
+        result = false
+        break
+      end
+    end
+  elsif is_a? Hash
+    my_each do |k, v|
+      if v[k].is_a? arg
+        result = false
+        break
+      end
+    end
+  end
+  result
+end
+
+def my_none_else_else(result, arg)
+  if is_a? Array
+    my_each do |item|
+      if item == arg
+        result = false
+        break
+      end
+    end
+  elsif is_a? Hash
+    my_each do |k, v|
+      if v[k] == arg
+        result = false
+        break
+      end
+    end
+  end
+  result
+end
+
+def my_none_else(result, arg)
+  if arg.is_a? Class
+    my_none_else_class(result, arg)
+  else
+    my_none_else_else(result, arg)
+  end
+end
+
+def my_count_block(count)
+  if is_a? Array
+    my_each do |item|
+      count += 1 if yield(item)
+    end
+  elsif is_a? Hash
+    my_each do |k, v|
+      count += 1 if yield(k, v)
+    end
+  end
+  count
+end
+
+def my_count_not_block(count, arg)
+  if is_a? Array
+    my_each { |item| count += 1 if item == arg }
+  elsif is_a? Hash
+    my_each { |_k, v| count += 1 if v == arg }
+  end
+  count
+end
+
+# TESTS
 # puts %w[ant bear cat].my_all? { |word| word.length >= 4 } #=> false
 # puts %w[ant bear cat].my_all? { |word| word.length >= 3 } #=> true
 # puts %w[ant bear cat].my_all?(/t/)                        #=> false
