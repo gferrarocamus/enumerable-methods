@@ -125,7 +125,7 @@ def my_all_empty_arg(result)
   if is_a? Array
     my_each { |item| result = false unless item }
   elsif is_a? Hash
-    my_each { |k, v| result = false unless v[k] }
+    my_each { |_k, v| result = false unless v }
   end
   result
 end
@@ -137,7 +137,7 @@ def my_all_arg_class(result, arg)
     end
   elsif is_a? Hash
     my_each do |k, v|
-      result = false unless v[k].is_a? arg
+      result = false unless (v.is_a? arg) && (k.is_a? arg)
     end
   end
   result
@@ -150,7 +150,7 @@ def my_all_arg_class_else(result, arg)
     end
   elsif is_a? Hash
     my_each do |k, v|
-      result = false unless v[k] == arg
+      result = false unless v == arg && k == arg
     end
   end
   result
@@ -170,7 +170,7 @@ def my_any_empty_arg(result)
   if is_a? Array
     my_each { |item| result = true if item }
   elsif is_a? Hash
-    my_each { |k, v| result = true if v[k] }
+    my_each { |_k, v| result = true if v }
   end
   result
 end
@@ -182,7 +182,7 @@ def my_any_arg_class(result, arg)
     end
   elsif is_a? Hash
     my_each do |k, v|
-      result = true if v[k].is_a? arg
+      result = true if (v.is_a? arg) && (k.is_a? arg)
     end
   end
   result
@@ -195,7 +195,7 @@ def my_any_arg_clas_else(result, arg)
     end
   elsif is_a? Hash
     my_each do |k, v|
-      result = true if v[k] == arg
+      result = true if v == arg && k == arg
     end
   end
   result
@@ -222,7 +222,7 @@ end
 
 def my_none_empty_arg(result)
   my_each do |k, v|
-    if ((is_a? Array) && k) || ((is_a? Hash) && v[k])
+    if ((is_a? Array) && k) || ((is_a? Hash) && v)
       result = false
       break
     end
@@ -232,7 +232,8 @@ end
 
 def my_none_else_class(result, arg)
   my_each do |k, v|
-    if ((is_a? Array) && (k.is_a? arg)) || ((is_a? Hash) && (v[k].is_a? arg))
+    if ((is_a? Array) && (k.is_a? arg)) ||
+       ((is_a? Hash) && (v.is_a? arg) && (k.is_a? arg))
       result = false
       break
     end
@@ -242,7 +243,7 @@ end
 
 def my_none_else_else(result, arg)
   my_each do |k, v|
-    if ((is_a? Array) && (k == arg)) || ((is_a? Hash) && (v[k] == arg))
+    if ((is_a? Array) && (k == arg)) || ((is_a? Hash) && (v == arg))
       result = false
       break
     end
@@ -279,3 +280,20 @@ def my_count_not_block(count, arg)
   end
   count
 end
+
+h = {
+  a: 'ant',
+  b: 'bear',
+  c: 'cat'
+}
+puts(h.none? { |word| word.length == 5 }) #=> true
+puts(h.none? { |word| word.length >= 4 }) #=> true
+puts h.none?(/d/) #=> true
+puts(%w[ant bear cat].my_none? { |word| word.length == 5 }) #=> true
+puts(%w[ant bear cat].my_none? { |word| word.length >= 4 }) #=> false
+puts %w[ant bear cat].my_none?(/d/)                        #=> true
+puts [1, 3.14, 42].my_none?(Float)                         #=> false
+puts [].my_none?                                           #=> true
+puts [nil].my_none?                                        #=> true
+puts [nil, false].my_none?                                 #=> true
+puts [nil, false, true].my_none?                           #=> false
